@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../config/database");
 
 class Book {
   static async all() {
@@ -12,19 +12,19 @@ class Book {
   }
 
   static async create(params) {
-    const { title, author, ISBN, quantity, location } = params;
+    const { title, author, ISBN, quantity, shelf_location } = params;
     const [result] = await db.query(
-      "INSERT INTO books (title, author, ISBN, quantity, location ) VALUES (?, ?)",
-      [title, author, ISBN, quantity, location]
+      "INSERT INTO books (title, author, ISBN, quantity, shelf_location ) VALUES (?, ?)",
+      [title, author, ISBN, quantity, shelf_location]
     );
     return result.insertId;
   }
 
   static async update(id, params) {
-    const { title, author, ISBN, quantity, location } = params;
+    const { title, author, ISBN, quantity, shelf_location } = params;
     const [result] = await db.query(
-      "UPDATE books SET title = ?, author = ?, ISBN = ?, quantity = ?, location = ? WHERE id = ?",
-      [title, author, ISBN, quantity, location, id]
+      "UPDATE books SET title = ?, author = ?, ISBN = ?, quantity = ?, shelf_location = ? WHERE id = ?",
+      [title, author, ISBN, quantity, shelf_location, id]
     );
     return result.affectedRows;
   }
