@@ -10,7 +10,7 @@ const pool = mysql.createPool({
   queueLimit: 0
 }).promise();
 
-async function connectWithRetry(retries = 10, delay = 30000) {
+async function connectWithRetry(retries = 15, delay = 20000) {
   for (let i = 0; i < retries; i++) {
     try {
       // Test if connectionn is established successfully

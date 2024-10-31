@@ -13,7 +13,7 @@ CREATE TABLE books (
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -25,8 +25,8 @@ CREATE TABLE borrow_records (
   borrow_date DATE DEFAULT (CURRENT_DATE),
   return_date DATE NOT NULL,
   status ENUM('borrowed', 'returned') DEFAULT 'borrowed',
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (book_id) REFERENCES books(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
 );
 
 ALTER TABLE books ADD FULLTEXT(title, author, ISBN);

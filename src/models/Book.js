@@ -32,8 +32,13 @@ class Book {
       if (key === "id") {
         continue;
       }
-      setColumns.push(`${key} = ?`);
-      setValues.push(value);
+      if (key === "quantity" && typeof value === "string") {
+        setColumns.push(`${key} = ${key} + ?`);
+        setValues.push(parseInt(value));
+      } else {
+        setColumns.push(`${key} = ?`);
+        setValues.push(value);
+      }
     }
 
     setValues.push(id);
@@ -72,6 +77,18 @@ class Book {
     );
 
     return rows;
+  }
+
+  static async checkAvailability(id) {
+    if (!id) {
+      return null;
+    }
+
+    const [rows] = await pool.query("SELECT quantity FROM books WHERE id = ?", [
+      id,
+    ]);
+
+    return rows[0].quantity > 0;
   }
 }
 

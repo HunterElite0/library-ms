@@ -7,11 +7,13 @@ app.use(express.json());
 // Mounting routes to express app
 app.use("/api/books", require("./src/routes/bookRoutes"));
 app.use("/api/users", require("./src/routes/userRoutes"));
+app.use("/api/borrows", require("./src/routes/borrowRoutes"));
 
 // Healthcheck
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to the Bookstore API" });
 });
+
 
 async function startServer() {
   try {
