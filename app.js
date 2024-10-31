@@ -1,16 +1,32 @@
-const express = require('express');
-const bookRoutes = require('./src/routes/bookRoutes');
+const express = require("express");
+const { dbConnect } = require("./src/config/database");
 
 const app = express();
 app.use(express.json());
-app.use('/book', bookRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Hello World');
+// Mounting routes to express app
+app.use("/api/books", require("./src/routes/bookRoutes"));
+
+// Healthcheck
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to the Bookstore API" });
 });
 
-const port = process.env.PORT || 3000;
+async function startServer() {
+  try {
+    // First, try to connect to the database
+    await dbConnect();
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+    // If database connection is successful, start the Express server
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+// Start the server
+startServer();

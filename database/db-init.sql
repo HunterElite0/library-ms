@@ -28,3 +28,5 @@ CREATE TABLE borrow_records (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (book_id) REFERENCES books(id)
 );
+
+ALTER TABLE books ADD FULLTEXT(title, author, ISBN);

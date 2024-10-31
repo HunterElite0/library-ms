@@ -1,0 +1,6 @@
+database
+.gitignore
+Dockerfile
+docker-compose.yaml
+README.md
+startup.sh

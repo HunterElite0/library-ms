@@ -7,13 +7,16 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./db-init.sql:/docker-entrypoint-initdb.d/db-init.sql
+      - ./database/data:/var/lib/mysql
+      - ./database/db-init.sql:/docker-entrypoint-initdb.d/db-init.sql
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
-    
+    stop_grace_period: 1m
+    stop_signal: SIGTERM
+
   nodejs:
     build:
       context: .

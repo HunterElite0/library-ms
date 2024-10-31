@@ -1,44 +1,73 @@
-const db = require("../config/database");
+const { pool } = require("../config/database");
 
 class Book {
   static async all() {
-    const [rows] = await db.query("SELECT * FROM books");
+    const [rows] = await pool.query("SELECT * FROM books");
     return rows;
   }
 
-  static async find(id) {
-    const [rows] = await db.query("SELECT * FROM books WHERE id = ?", [id]);
-    return rows[0];
-  }
-
   static async create(params) {
+    if (!params) {
+      return null;
+    }
+
     const { title, author, ISBN, quantity, shelf_location } = params;
-    const [result] = await db.query(
-      "INSERT INTO books (title, author, ISBN, quantity, shelf_location ) VALUES (?, ?)",
+    const [result] = await pool.query(
+      "INSERT INTO books (title, author, ISBN, quantity, shelf_location ) VALUES (?, ?, ?, ?, ?)",
       [title, author, ISBN, quantity, shelf_location]
     );
     return result.insertId;
   }
 
   static async update(id, params) {
-    const { title, author, ISBN, quantity, shelf_location } = params;
-    const [result] = await db.query(
-      "UPDATE books SET title = ?, author = ?, ISBN = ?, quantity = ?, shelf_location = ? WHERE id = ?",
-      [title, author, ISBN, quantity, shelf_location, id]
+    if (!id || !params) {
+      return null;
+    }
+
+    const paramMap = new Map(Object.entries(params));
+    const setColumns = [];
+    const setValues = [];
+
+    for (const [key, value] of paramMap) {
+      setColumns.push(`${key} = ?`);
+      setValues.push(value);
+    }
+
+    setValues.push(id);
+
+    const [result] = await pool.query(
+      `UPDATE books SET ${setColumns.join(", ")} WHERE id = ?`,
+      setValues
     );
+
     return result.affectedRows;
   }
 
   static async delete(id) {
-    const [result] = await db.query("DELETE FROM books WHERE id = ?", [id]);
+    if (!id) {
+      return null;
+    }
+
+    const [result] = await pool.query("DELETE FROM books WHERE id = ?", [id]);
     return result.affectedRows;
   }
 
   static async search(term) {
-    const [rows] = await db.query(
-      "SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR ISBN LIKE ?",
-      [`%${term}%`, `%${term}%`, `%${term}%`]
+    // Input validation
+    if (!term || typeof term !== "string") {
+      return null;
+    }
+
+    // Sanitize the search term to prevent SQL injection
+    const sanitizedTerm = term.replace(/[%_\\]/g, "\\$&");
+
+    const [rows] = await pool.query(
+      `SELECT * FROM books 
+       WHERE MATCH(title, author, ISBN) 
+       AGAINST (? IN NATURAL LANGUAGE MODE)`,
+      [sanitizedTerm]
     );
+
     return rows;
   }
 }
