@@ -218,6 +218,3 @@ erDiagram
 - Enumerated status for borrow records
 - Cascading deletes for maintaining referential integrity
 - Unique constraint on user emails
-
----
-For more information or support, please open an issue in the repository.
