@@ -29,6 +29,9 @@ class Book {
     const setValues = [];
 
     for (const [key, value] of paramMap) {
+      if (key === "id") {
+        continue;
+      }
       setColumns.push(`${key} = ?`);
       setValues.push(value);
     }

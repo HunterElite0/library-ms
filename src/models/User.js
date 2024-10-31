@@ -29,6 +29,9 @@ class User {
     const setValues = [];
 
     for (const [key, value] of paramMap) {
+      if (key === "id" || key === "created_at") {
+        continue;
+      }
       setColumns.push(`${key} = ?`);
       setValues.push(value);
     }
@@ -51,4 +54,26 @@ class User {
     const [result] = await pool.query("DELETE FROM users WHERE id = ?", [id]);
     return result.affectedRows;
   }
+
+  static async authUser(email, password) {
+    if (!email || !password) {
+      return null;
+    }
+
+    const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+
+    if (!rows.length) {
+      return null;
+    }
+
+    if (rows[0].password !== password) {
+      return null;
+    }
+
+    return rows[0];
+  }
 }
+
+module.exports = User;

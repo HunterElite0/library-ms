@@ -33,3 +33,18 @@ exports.deleteUser = async (req, res) => {
     ? res.json({ affectedRows })
     : res.status(500).json({ error: "Failed to delete user" });
 };
+
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.authUser(email, password);
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const token = user.id;
+    res.cookie("token", token).json("Logged in");
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

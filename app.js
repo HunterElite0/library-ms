@@ -6,6 +6,7 @@ app.use(express.json());
 
 // Mounting routes to express app
 app.use("/api/books", require("./src/routes/bookRoutes"));
+app.use("/api/users", require("./src/routes/userRoutes"));
 
 // Healthcheck
 app.get("/", (req, res) => {
